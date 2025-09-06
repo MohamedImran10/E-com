@@ -17,7 +17,7 @@ const mockProducts = [
     name: 'Wireless Bluetooth Headphones', 
     price: 2999, 
     category: 'Electronics', 
-    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=200&fit=crop', 
+    image: 'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=300&h=200&fit=crop', 
     rating: 4.5,
     description: 'Premium quality wireless headphones with noise cancellation'
   },
@@ -53,7 +53,7 @@ const mockProducts = [
     name: 'Laptop Stand Adjustable', 
     price: 899, 
     category: 'Electronics', 
-    image: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=300&h=200&fit=crop', 
+    image: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=300&h=200&fit=crop', 
     rating: 4.4,
     description: 'Ergonomic laptop stand for better posture while working'
   },
@@ -71,7 +71,7 @@ const mockProducts = [
     name: 'Wireless Mouse', 
     price: 799, 
     category: 'Electronics', 
-    image: 'https://images.unsplash.com/photo-1563297007-0686b4ac4de4?w=300&h=200&fit=crop', 
+    image: 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=300&h=200&fit=crop', 
     rating: 4.1,
     description: 'Ergonomic wireless mouse with long battery life'
   },

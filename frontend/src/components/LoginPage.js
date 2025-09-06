@@ -120,16 +120,6 @@ const LoginPage = () => {
                   </Button>
                 </p>
               </div>
-
-              <hr className="my-4" />
-              
-              <div className="text-center">
-                <small className="text-muted">
-                  Demo credentials:<br />
-                  Email: user@example.com<br />
-                  Password: password
-                </small>
-              </div>
             </Card.Body>
           </Card>
         </Col>

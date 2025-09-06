@@ -32,13 +32,6 @@ const Navigation = () => {
             >
               Products
             </Nav.Link>
-            <Nav.Link 
-              href="#" 
-              onClick={() => setCurrentPage('categories')}
-              className="fw-medium"
-            >
-              Categories
-            </Nav.Link>
           </Nav>
           
           <Nav className="align-items-center">

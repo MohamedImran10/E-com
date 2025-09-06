@@ -2,12 +2,12 @@
 
 /* Primary gradient background */
 .bg-gradient-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
 }
 
 /* Text gradient */
 .text-gradient {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -75,8 +75,8 @@
 }
 
 .form-control:focus, .form-select:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.25);
 }
 
 /* Alert enhancements */
@@ -116,13 +116,13 @@
 .price-large {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #667eea;
+  color: #4f46e5;
 }
 
 .price-small {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #667eea;
+  color: #4f46e5;
 }
 
 /* Category badges */
@@ -149,7 +149,7 @@
 
 /* Footer styling */
 .footer {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
   color: white;
   margin-top: auto;
 }
@@ -196,10 +196,10 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #667eea;
+  background: #4f46e5;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #5a6fd8;
+  background: #3b37c7;
 }

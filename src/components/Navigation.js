@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navbar, Nav, Container, Badge, Dropdown } from 'react-bootstrap';
+import { Navbar, Nav, Container, Badge, Dropdown, Button } from 'react-bootstrap';
 import { ShoppingCart, User, Heart } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 
@@ -61,20 +61,19 @@ const Navigation = () => {
               </>
             ) : (
               <>
-                <Nav.Link 
-                  href="#" 
+                <Button 
+                  variant="outline-primary" 
+                  className="me-2"
                   onClick={() => setCurrentPage('login')}
-                  className="btn btn-outline-primary me-2"
                 >
                   Login
-                </Nav.Link>
-                <Nav.Link 
-                  href="#" 
+                </Button>
+                <Button 
+                  variant="primary"
                   onClick={() => setCurrentPage('signup')}
-                  className="btn btn-primary text-white"
                 >
                   Sign Up
-                </Nav.Link>
+                </Button>
               </>
             )}
             

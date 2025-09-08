@@ -64,20 +64,27 @@ export const AppProvider = ({ children }) => {
   }, []);  // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadProducts = async () => {
+    console.log('Loading products...');
     try {
       const data = await ApiService.getProducts();
+      console.log('Products API response:', data);
       setProducts(data.results || data);
+      setError(null); // Clear any previous errors
     } catch (error) {
       console.error('Failed to load products:', error);
+      setError(`Failed to load products: ${error.message}`);
     }
   };
 
   const loadCategories = async () => {
+    console.log('Loading categories...');
     try {
       const data = await ApiService.getCategories();
+      console.log('Categories API response:', data);
       setCategories(data.results || data);
     } catch (error) {
       console.error('Failed to load categories:', error);
+      setError(`Failed to load categories: ${error.message}`);
     }
   };
 

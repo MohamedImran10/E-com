@@ -95,7 +95,7 @@ const CartPage = () => {
                         <Button
                           variant="outline-secondary"
                           size="sm"
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          onClick={() => updateQuantity(item.item, item.quantity - 1)}
                           disabled={item.quantity <= 1}
                         >
                           <Minus size={14} />
@@ -104,7 +104,7 @@ const CartPage = () => {
                         <Button
                           variant="outline-secondary"
                           size="sm"
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => updateQuantity(item.item, item.quantity + 1)}
                         >
                           <Plus size={14} />
                         </Button>
@@ -115,7 +115,7 @@ const CartPage = () => {
                       <Button
                         variant="outline-danger"
                         size="sm"
-                        onClick={() => removeFromCart(item.id)}
+                        onClick={() => removeFromCart(item.item)}
                       >
                         <Trash2 size={16} />
                       </Button>

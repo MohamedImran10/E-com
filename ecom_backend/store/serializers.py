@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from .models import Category, Item, Cart, CartItem, Wishlist
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, min_length=8)
+    password = serializers.CharField(write_only=True, min_length=6)
     password_confirm = serializers.CharField(write_only=True)
 
     class Meta:

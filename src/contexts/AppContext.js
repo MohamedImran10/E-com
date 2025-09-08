@@ -92,7 +92,19 @@ export const AppProvider = ({ children }) => {
     if (!user) return;
     try {
       const data = await ApiService.getCart();
-      setCart(data.items || []);
+      console.log('Raw cart data:', data);
+      const normalizedItems = (data.items || []).map(item => ({
+        id: item.id,
+        item: item.item,
+        name: item.item_name || item.name,
+        price: parseFloat(item.item_price || item.price || 0),
+        image: item.item_image || item.image,
+        category: item.category_name || item.category,
+        quantity: item.quantity || 1,
+        total_price: item.total_price || (parseFloat(item.item_price || item.price || 0) * (item.quantity || 1))
+      }));
+      console.log('Normalized cart items:', normalizedItems);
+      setCart(normalizedItems);
     } catch (error) {
       console.error('Failed to load cart:', error);
     }

@@ -9,6 +9,7 @@ import CartPage from './components/CartPage';
 import LoginPage from './components/LoginPage';
 import SignupPage from './components/SignupPage';
 import WishlistPage from './components/WishlistPage';
+import ApiTestComponent from './components/ApiTestComponent';
 
 const AppContent = () => {
   const { currentPage } = useApp();
@@ -23,6 +24,8 @@ const AppContent = () => {
         return <CartPage />;
       case 'wishlist':
         return <WishlistPage />;
+      case 'api-test':
+        return <ApiTestComponent />;
       case 'products':
       default:
         return <ProductListPage />;

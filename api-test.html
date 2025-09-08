@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test</title>
+</head>
+<body>
+    <div id="results"></div>
+    
+    <script>
+        const API_URL = 'http://localhost:8000/api';
+        
+        async function testAPI() {
+            const results = document.getElementById('results');
+            
+            try {
+                results.innerHTML += '<h2>Testing Products API...</h2>';
+                const productsResponse = await fetch(`${API_URL}/items/`);
+                const productsData = await productsResponse.json();
+                results.innerHTML += `<p>Products: ${productsData.count} items found</p>`;
+                
+                results.innerHTML += '<h2>Testing Categories API...</h2>';
+                const categoriesResponse = await fetch(`${API_URL}/categories/`);
+                const categoriesData = await categoriesResponse.json();
+                results.innerHTML += `<p>Categories: ${categoriesData.count} categories found</p>`;
+                
+                results.innerHTML += '<h2>✅ API Test Successful!</h2>';
+                results.innerHTML += '<p>Backend is working correctly.</p>';
+                
+            } catch (error) {
+                results.innerHTML += `<h2>❌ API Test Failed</h2>`;
+                results.innerHTML += `<p>Error: ${error.message}</p>`;
+            }
+        }
+        
+        testAPI();
+    </script>
+</body>
+</html>

@@ -30,21 +30,38 @@ class ApiService {
   async request(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`;
     const config = {
+      mode: 'cors',
       headers: this.getHeaders(),
       ...options,
     };
 
+    console.log('Making API request to:', url);
+    console.log('Request config:', config);
+
     try {
       const response = await fetch(url, config);
       
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+      
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || errorData.detail || `HTTP ${response.status}`);
+        throw new Error(errorData.error || errorData.detail || `HTTP ${response.status}: ${response.statusText}`);
       }
 
-      return await response.json();
+      const data = await response.json();
+      console.log('Response data:', data);
+      return data;
     } catch (error) {
       console.error('API request failed:', error);
+      console.error('URL:', url);
+      console.error('Config:', config);
+      
+      // Provide more specific error messages
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        throw new Error('Network error: Unable to connect to the backend server. Make sure the backend is running on http://localhost:8000');
+      }
+      
       throw error;
     }
   }
@@ -172,4 +189,5 @@ class ApiService {
   }
 }
 
-export default new ApiService();
+const apiService = new ApiService();
+export default apiService;

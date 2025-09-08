@@ -90,18 +90,18 @@ DATABASES = {
     }
 }
 
-# Production PostgreSQL configuration
-if not DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': config('DATABASE_NAME'),
-            'USER': config('DATABASE_USER'),
-            'PASSWORD': config('DATABASE_PASSWORD'),
-            'HOST': config('DATABASE_HOST'),
-            'PORT': config('DATABASE_PORT', default='5432'),
-        }
-    }
+# Optional PostgreSQL configuration (commented out for SQLite deployment)
+# if not DEBUG:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': config('DATABASE_NAME'),
+#             'USER': config('DATABASE_USER'),
+#             'PASSWORD': config('DATABASE_PASSWORD'),
+#             'HOST': config('DATABASE_HOST'),
+#             'PORT': config('DATABASE_PORT', default='5432'),
+#         }
+#     }
 
 
 # Password validation

@@ -4,7 +4,7 @@ import { UserPlus, Mail, Lock, User } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 
 const SignupPage = () => {
-  const { signup, setCurrentPage } = useApp();
+  const { signup, setCurrentPage, error: contextError, clearError } = useApp();
   const [formData, setFormData] = useState({ 
     name: '', 
     email: '', 
@@ -14,10 +14,13 @@ const SignupPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const displayError = error || contextError;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    if (contextError) clearError();
 
     // Validation
     if (formData.password !== formData.confirmPassword) {
@@ -33,8 +36,10 @@ const SignupPage = () => {
     }
 
     try {
-      await signup(formData.name, formData.email, formData.password);
-      setCurrentPage('products');
+      const success = await signup(formData.name, formData.email, formData.password);
+      if (success) {
+        setCurrentPage('products');
+      }
     } catch (err) {
       setError('An error occurred during signup. Please try again.');
     }
@@ -64,9 +69,9 @@ const SignupPage = () => {
                 <p className="text-muted">Join us and start shopping</p>
               </div>
 
-              {error && (
+              {displayError && (
                 <Alert variant="danger" className="mb-4">
-                  {error}
+                  {displayError}
                 </Alert>
               )}
 

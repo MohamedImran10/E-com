@@ -11,16 +11,15 @@ const ProductCard = ({ product }) => {
 
   const handleAddToCart = async () => {
     setIsAdding(true);
-    await new Promise(resolve => setTimeout(resolve, 500));
-    addToCart(product);
+    await addToCart(product);
     setIsAdding(false);
   };
 
-  const handleWishlistToggle = () => {
+  const handleWishlistToggle = async () => {
     if (isInWishlist) {
-      removeFromWishlist(product.id);
+      await removeFromWishlist(product.id);
     } else {
-      addToWishlist(product);
+      await addToWishlist(product);
     }
   };
 

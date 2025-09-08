@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import ApiService from '../services/api';
 
 const AppContext = createContext();
 
@@ -10,186 +11,276 @@ export const useApp = () => {
   return context;
 };
 
-// Mock products with Indian products and pricing
-const mockProducts = [
-  { 
-    id: 1, 
-    name: 'Wireless Bluetooth Headphones', 
-    price: 2999, 
-    category: 'Electronics', 
-    image: 'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=300&h=200&fit=crop', 
-    rating: 4.5,
-    description: 'Premium quality wireless headphones with noise cancellation'
-  },
-  { 
-    id: 2, 
-    name: 'Smart Fitness Watch', 
-    price: 4999, 
-    category: 'Electronics', 
-    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=200&fit=crop', 
-    rating: 4.3,
-    description: 'Track your fitness goals with this advanced smartwatch'
-  },
-  { 
-    id: 3, 
-    name: 'Running Sports Shoes', 
-    price: 1999, 
-    category: 'Fashion', 
-    image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=200&fit=crop', 
-    rating: 4.7,
-    description: 'Comfortable running shoes for all your fitness activities'
-  },
-  { 
-    id: 4, 
-    name: 'Coffee Maker Machine', 
-    price: 3499, 
-    category: 'Home & Kitchen', 
-    image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=300&h=200&fit=crop', 
-    rating: 4.2,
-    description: 'Brew perfect coffee every morning with this premium machine'
-  },
-  { 
-    id: 5, 
-    name: 'Laptop Stand Adjustable', 
-    price: 899, 
-    category: 'Electronics', 
-    image: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=300&h=200&fit=crop', 
-    rating: 4.4,
-    description: 'Ergonomic laptop stand for better posture while working'
-  },
-  { 
-    id: 6, 
-    name: 'Premium Yoga Mat', 
-    price: 1299, 
-    category: 'Sports', 
-    image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=300&h=200&fit=crop', 
-    rating: 4.6,
-    description: 'Non-slip yoga mat for your daily meditation and exercise'
-  },
-  { 
-    id: 7, 
-    name: 'Wireless Mouse', 
-    price: 799, 
-    category: 'Electronics', 
-    image: 'https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=300&h=200&fit=crop', 
-    rating: 4.1,
-    description: 'Ergonomic wireless mouse with long battery life'
-  },
-  { 
-    id: 8, 
-    name: 'Designer Backpack', 
-    price: 2499, 
-    category: 'Fashion', 
-    image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300&h=200&fit=crop', 
-    rating: 4.8,
-    description: 'Stylish and spacious backpack for daily use'
-  }
-];
-
 export const AppProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [cart, setCart] = useState([]);
-  const [products] = useState(mockProducts);
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [currentPage, setCurrentPage] = useState('products');
   const [wishlist, setWishlist] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Load cart from localStorage on mount
-  useEffect(() => {
-    const savedCart = localStorage.getItem('eShopCart');
-    const savedWishlist = localStorage.getItem('eShopWishlist');
-    if (savedCart) {
-      setCart(JSON.parse(savedCart));
-    }
-    if (savedWishlist) {
-      setWishlist(JSON.parse(savedWishlist));
-    }
-  }, []);
-
-  // Save cart to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('eShopCart', JSON.stringify(cart));
-  }, [cart]);
-
-  // Save wishlist to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('eShopWishlist', JSON.stringify(wishlist));
-  }, [wishlist]);
-
-  const addToCart = (product) => {
-    setCart(prev => {
-      const existing = prev.find(item => item.id === product.id);
-      if (existing) {
-        return prev.map(item =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
+  const initializeApp = async () => {
+    setLoading(true);
+    try {
+      // Check if user is already logged in
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        ApiService.setToken(token);
+        try {
+          const userProfile = await ApiService.getUserProfile();
+          setUser(userProfile);
+          
+          // Load user's cart and wishlist
+          await Promise.all([
+            loadCart(),
+            loadWishlist()
+          ]);
+        } catch (error) {
+          // Token might be expired, remove it
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('refreshToken');
+          ApiService.setToken(null);
+        }
       }
-      return [...prev, { ...product, quantity: 1 }];
-    });
+
+      // Load products and categories
+      await Promise.all([
+        loadProducts(),
+        loadCategories()
+      ]);
+    } catch (error) {
+      console.error('Failed to initialize app:', error);
+      setError('Failed to load application data');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const removeFromCart = (productId) => {
-    setCart(prev => prev.filter(item => item.id !== productId));
+  // Initialize app data on mount
+  useEffect(() => {
+    initializeApp();
+  }, []);  // eslint-disable-line react-hooks/exhaustive-deps
+
+  const loadProducts = async () => {
+    try {
+      const data = await ApiService.getProducts();
+      setProducts(data.results || data);
+    } catch (error) {
+      console.error('Failed to load products:', error);
+    }
   };
 
-  const updateQuantity = (productId, quantity) => {
+  const loadCategories = async () => {
+    try {
+      const data = await ApiService.getCategories();
+      setCategories(data.results || data);
+    } catch (error) {
+      console.error('Failed to load categories:', error);
+    }
+  };
+
+  const loadCart = async () => {
+    if (!user) return;
+    try {
+      const data = await ApiService.getCart();
+      setCart(data.items || []);
+    } catch (error) {
+      console.error('Failed to load cart:', error);
+    }
+  };
+
+  const loadWishlist = async () => {
+    if (!user) return;
+    try {
+      const data = await ApiService.getWishlist();
+      setWishlist(data.items || []);
+    } catch (error) {
+      console.error('Failed to load wishlist:', error);
+    }
+  };
+
+  const addToCart = async (product, quantity = 1) => {
+    if (!user) {
+      setError('Please login to add items to cart');
+      return false;
+    }
+
+    try {
+      setLoading(true);
+      await ApiService.addToCart(product.id, quantity);
+      await loadCart(); // Refresh cart
+      return true;
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
+      setError('Failed to add item to cart');
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const removeFromCart = async (productId) => {
+    if (!user) return false;
+
+    try {
+      setLoading(true);
+      await ApiService.removeFromCart(productId);
+      await loadCart(); // Refresh cart
+      return true;
+    } catch (error) {
+      console.error('Failed to remove from cart:', error);
+      setError('Failed to remove item from cart');
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateQuantity = async (productId, quantity) => {
+    if (!user) return false;
+
     if (quantity <= 0) {
-      removeFromCart(productId);
-      return;
+      return await removeFromCart(productId);
     }
-    setCart(prev =>
-      prev.map(item =>
-        item.id === productId ? { ...item, quantity } : item
-      )
-    );
+
+    try {
+      setLoading(true);
+      await ApiService.updateCartItem(productId, quantity);
+      await loadCart(); // Refresh cart
+      return true;
+    } catch (error) {
+      console.error('Failed to update quantity:', error);
+      setError('Failed to update item quantity');
+      return false;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const addToWishlist = (product) => {
-    setWishlist(prev => {
-      const exists = prev.find(item => item.id === product.id);
-      if (!exists) {
-        return [...prev, product];
-      }
-      return prev;
-    });
+  const addToWishlist = async (product) => {
+    if (!user) {
+      setError('Please login to add items to wishlist');
+      return false;
+    }
+
+    try {
+      setLoading(true);
+      await ApiService.addToWishlist(product.id);
+      await loadWishlist(); // Refresh wishlist
+      return true;
+    } catch (error) {
+      console.error('Failed to add to wishlist:', error);
+      setError('Failed to add item to wishlist');
+      return false;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const removeFromWishlist = (productId) => {
-    setWishlist(prev => prev.filter(item => item.id !== productId));
+  const removeFromWishlist = async (productId) => {
+    if (!user) return false;
+
+    try {
+      setLoading(true);
+      await ApiService.removeFromWishlist(productId);
+      await loadWishlist(); // Refresh wishlist
+      return true;
+    } catch (error) {
+      console.error('Failed to remove from wishlist:', error);
+      setError('Failed to remove item from wishlist');
+      return false;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const login = async (email, password) => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    if (email === 'user@example.com' && password === 'password') {
-      setUser({ id: 1, name: 'John Doe', email });
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await ApiService.login(email, password);
+      
+      // Store refresh token
+      if (response.refresh) {
+        localStorage.setItem('refreshToken', response.refresh);
+      }
+      
+      // Get user profile
+      const userProfile = await ApiService.getUserProfile();
+      setUser(userProfile);
+      
+      // Load user data
+      await Promise.all([
+        loadCart(),
+        loadWishlist()
+      ]);
+      
       return true;
+    } catch (error) {
+      console.error('Login failed:', error);
+      setError(error.message || 'Login failed');
+      return false;
+    } finally {
+      setLoading(false);
     }
-    return false;
   };
 
   const signup = async (name, email, password) => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setUser({ id: 1, name, email });
-    return true;
+    try {
+      setLoading(true);
+      setError(null);
+      
+      await ApiService.register(name, email, password);
+      
+      // Auto-login after successful registration
+      return await login(email, password);
+    } catch (error) {
+      console.error('Signup failed:', error);
+      setError(error.message || 'Registration failed');
+      return false;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = () => {
+    ApiService.logout();
     setUser(null);
     setCart([]);
     setWishlist([]);
-    localStorage.removeItem('eShopCart');
-    localStorage.removeItem('eShopWishlist');
+    setCurrentPage('products');
   };
+
+  const searchProducts = async (query, filters = {}) => {
+    try {
+      setLoading(true);
+      const params = { search: query, ...filters };
+      const data = await ApiService.getProducts(params);
+      setProducts(data.results || data);
+      return data.results || data;
+    } catch (error) {
+      console.error('Search failed:', error);
+      setError('Search failed');
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const clearError = () => setError(null);
 
   const value = {
     user,
     cart,
     products,
+    categories,
     currentPage,
     wishlist,
+    loading,
+    error,
     setUser,
     addToCart,
     removeFromCart,
@@ -199,7 +290,11 @@ export const AppProvider = ({ children }) => {
     signup,
     logout,
     addToWishlist,
-    removeFromWishlist
+    removeFromWishlist,
+    searchProducts,
+    loadProducts,
+    loadCategories,
+    clearError
   };
 
   return (

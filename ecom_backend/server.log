@@ -1,0 +1,29 @@
+nohup: ignoring input
+/home/imran/Desktop/E-com/ecom_backend/venv/lib/python3.12/site-packages/rest_framework_simplejwt/__init__.py:1: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from pkg_resources import DistributionNotFound, get_distribution
+/home/imran/Desktop/E-com/ecom_backend/venv/lib/python3.12/site-packages/rest_framework_simplejwt/__init__.py:1: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from pkg_resources import DistributionNotFound, get_distribution
+Watching for file changes with StatReloader
+[08/Sep/2025 11:25:35] "GET /api/categories/ HTTP/1.1" 200 1361
+[08/Sep/2025 11:25:43] "GET /api/categories/ HTTP/1.1" 200 1361
+[08/Sep/2025 11:25:54] "GET /api/items/featured/ HTTP/1.1" 200 1580
+[08/Sep/2025 11:26:07] "POST /api/auth/register/ HTTP/1.1" 201 89
+[08/Sep/2025 11:26:18] "POST /api/auth/login/ HTTP/1.1" 200 483
+[08/Sep/2025 11:26:34] "POST /api/cart/add/ HTTP/1.1" 201 286
+[08/Sep/2025 11:26:45] "GET /api/cart/ HTTP/1.1" 200 452
+[08/Sep/2025 11:27:42] "POST /api/wishlist/add/ HTTP/1.1" 201 36
+[08/Sep/2025 11:28:00] "GET /api/wishlist/ HTTP/1.1" 200 506
+[08/Sep/2025 11:28:12] "GET /api/items/?search=phone HTTP/1.1" 200 854
+[08/Sep/2025 11:28:26] "GET /api/items/?category=1 HTTP/1.1" 200 1632
+/home/imran/Desktop/E-com/ecom_backend/ecom_project/settings.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+September 08, 2025 - 11:25:17
+Django version 4.2.7, using settings 'ecom_project.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+/home/imran/Desktop/E-com/ecom_backend/venv/lib/python3.12/site-packages/rest_framework_simplejwt/__init__.py:1: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  from pkg_resources import DistributionNotFound, get_distribution
+Watching for file changes with StatReloader

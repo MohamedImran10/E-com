@@ -4,15 +4,18 @@ import { User, Mail, Lock } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 
 const LoginPage = () => {
-  const { login, setCurrentPage } = useApp();
+  const { login, setCurrentPage, error: contextError, clearError } = useApp();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const displayError = error || contextError;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    if (contextError) clearError();
 
     try {
       const success = await login(formData.email, formData.password);
@@ -20,7 +23,7 @@ const LoginPage = () => {
       if (success) {
         setCurrentPage('products');
       } else {
-        setError('Invalid credentials. Try user@example.com / password');
+        setError('Login failed. Please check your credentials.');
       }
     } catch (err) {
       setError('An error occurred during login. Please try again.');
@@ -51,9 +54,9 @@ const LoginPage = () => {
                 <p className="text-muted">Sign in to your account</p>
               </div>
 
-              {error && (
+              {displayError && (
                 <Alert variant="danger" className="mb-4">
-                  {error}
+                  {displayError}
                 </Alert>
               )}
 

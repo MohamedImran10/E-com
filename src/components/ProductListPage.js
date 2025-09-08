@@ -5,14 +5,14 @@ import { useApp } from '../contexts/AppContext';
 import ProductCard from './ProductCard';
 
 const ProductListPage = () => {
-  const { products } = useApp();
+  const { products, categories } = useApp();
   const [filteredProducts, setFilteredProducts] = useState(products);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('name');
 
-  const categories = ['all', ...Array.from(new Set(products.map(p => p.category)))];
+  const categoryOptions = ['all', ...categories.map(cat => cat.name || cat)];
 
   useEffect(() => {
     let filtered = products;
@@ -21,13 +21,16 @@ const ProductListPage = () => {
     if (searchTerm) {
       filtered = filtered.filter(product =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchTerm.toLowerCase())
+        (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
 
     // Filter by category
     if (selectedCategory !== 'all') {
-      filtered = filtered.filter(p => p.category === selectedCategory);
+      filtered = filtered.filter(p => {
+        const productCategory = p.category_name || p.category?.name || p.category;
+        return productCategory === selectedCategory;
+      });
     }
 
     // Filter by price range
@@ -47,7 +50,7 @@ const ProductListPage = () => {
         case 'price-high':
           return b.price - a.price;
         case 'rating':
-          return b.rating - a.rating;
+          return (b.rating || 0) - (a.rating || 0);
         case 'name':
         default:
           return a.name.localeCompare(b.name);
@@ -101,7 +104,7 @@ const ProductListPage = () => {
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
                 >
-                  {categories.map(category => (
+                  {categoryOptions.map(category => (
                     <option key={category} value={category}>
                       {category === 'all' ? 'All Categories' : category}
                     </option>

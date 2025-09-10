@@ -82,6 +82,7 @@ export const AppProvider = ({ children }) => {
       const data = await ApiService.getCategories();
       console.log('Categories API response:', data);
       setCategories(data.results || data);
+      setError(null); // Clear any previous errors
     } catch (error) {
       console.error('Failed to load categories:', error);
       setError(`Failed to load categories: ${error.message}`);
@@ -91,6 +92,7 @@ export const AppProvider = ({ children }) => {
   const loadCart = async () => {
     if (!user) return;
     try {
+      setError(null); // Clear any previous errors
       const data = await ApiService.getCart();
       console.log('Raw cart data:', data);
       const normalizedItems = (data.items || []).map(item => ({
@@ -113,6 +115,7 @@ export const AppProvider = ({ children }) => {
   const loadWishlist = async () => {
     if (!user) return;
     try {
+      setError(null); // Clear any previous errors
       const data = await ApiService.getWishlist();
       setWishlist(data.items || []);
     } catch (error) {
@@ -128,6 +131,7 @@ export const AppProvider = ({ children }) => {
 
     try {
       setLoading(true);
+      setError(null); // Clear any previous errors
       await ApiService.addToCart(product.id, quantity);
       await loadCart(); // Refresh cart
       return true;
@@ -145,6 +149,7 @@ export const AppProvider = ({ children }) => {
 
     try {
       setLoading(true);
+      setError(null); // Clear any previous errors
       await ApiService.removeFromCart(productId);
       await loadCart(); // Refresh cart
       return true;
@@ -166,6 +171,7 @@ export const AppProvider = ({ children }) => {
 
     try {
       setLoading(true);
+      setError(null); // Clear any previous errors
       await ApiService.updateCartItem(productId, quantity);
       await loadCart(); // Refresh cart
       return true;
@@ -186,6 +192,7 @@ export const AppProvider = ({ children }) => {
 
     try {
       setLoading(true);
+      setError(null); // Clear any previous errors
       await ApiService.addToWishlist(product.id);
       await loadWishlist(); // Refresh wishlist
       return true;
@@ -203,6 +210,7 @@ export const AppProvider = ({ children }) => {
 
     try {
       setLoading(true);
+      setError(null); // Clear any previous errors
       await ApiService.removeFromWishlist(productId);
       await loadWishlist(); // Refresh wishlist
       return true;

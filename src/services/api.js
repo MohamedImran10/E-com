@@ -4,6 +4,13 @@ class ApiService {
   constructor() {
     this.baseURL = API_BASE_URL;
     this.token = localStorage.getItem('authToken');
+    
+    // Debug logging to verify correct API URL
+    console.log('API Configuration:', {
+      REACT_APP_API_URL: process.env.REACT_APP_API_URL,
+      baseURL: this.baseURL,
+      isDevelopment: process.env.NODE_ENV === 'development'
+    });
   }
 
   setToken(token) {
@@ -59,7 +66,7 @@ class ApiService {
       
       // Provide more specific error messages
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        throw new Error('Network error: Unable to connect to the backend server. Make sure the backend is running on http://localhost:8000');
+        throw new Error(`Network error: Unable to connect to the backend server at ${this.baseURL}`);
       }
       
       throw error;

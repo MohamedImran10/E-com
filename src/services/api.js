@@ -85,16 +85,20 @@ class ApiService {
   }
 
   async register(name, email, password) {
+    const payload = {
+      username: email,
+      email,
+      password,
+      password_confirm: password,
+      first_name: name.split(' ')[0] || '',
+      last_name: name.split(' ').slice(1).join(' ') || '',
+    };
+    
+    console.log('Registration payload:', payload);
+    
     const response = await this.request('/auth/register/', {
       method: 'POST',
-      body: JSON.stringify({
-        username: email,
-        email,
-        password,
-        password_confirm: password,
-        first_name: name.split(' ')[0],
-        last_name: name.split(' ').slice(1).join(' '),
-      }),
+      body: JSON.stringify(payload),
     });
     return response;
   }

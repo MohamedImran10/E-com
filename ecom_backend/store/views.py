@@ -7,10 +7,11 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 
-from .models import Category, Item, Cart, CartItem, Wishlist
+from .models import Category, Item, Cart, CartItem, Wishlist, UserProfile, Order, OrderItem
 from .serializers import (
     UserRegistrationSerializer, UserSerializer, CategorySerializer,
-    ItemSerializer, CartSerializer, CartItemSerializer, WishlistSerializer
+    ItemSerializer, CartSerializer, CartItemSerializer, WishlistSerializer,
+    UserProfileSerializer, OrderSerializer, CreateOrderSerializer, OrderItemSerializer
 )
 
 # Authentication Views
@@ -181,3 +182,103 @@ def remove_from_wishlist(request, item_id):
         return Response({'message': 'Item removed from wishlist'}, status=status.HTTP_200_OK)
     except (Wishlist.DoesNotExist, Item.DoesNotExist):
         return Response({'error': 'Item not found in wishlist'}, status=status.HTTP_404_NOT_FOUND)
+
+# User Profile Views
+class UserProfileDetailView(generics.RetrieveUpdateAPIView):
+    serializer_class = UserProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        profile, created = UserProfile.objects.get_or_create(user=self.request.user)
+        return profile
+
+    def perform_update(self, serializer):
+        serializer.save(user=self.request.user)
+
+# Order Views
+class OrderListView(generics.ListAPIView):
+    serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user)
+
+class OrderDetailView(generics.RetrieveAPIView):
+    serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Order.objects.filter(user=self.request.user)
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def create_order(request):
+    serializer = CreateOrderSerializer(data=request.data)
+    
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        cart = Cart.objects.get(user=request.user)
+        cart_items = cart.items.all()
+        
+        if not cart_items:
+            return Response({'error': 'Cart is empty'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create order
+        order = Order.objects.create(
+            user=request.user,
+            total_amount=cart.total_price,
+            shipping_address=serializer.validated_data['shipping_address'],
+            payment_method=serializer.validated_data.get('payment_method', 'online'),
+            notes=serializer.validated_data.get('notes', '')
+        )
+
+        # Create order items
+        for cart_item in cart_items:
+            OrderItem.objects.create(
+                order=order,
+                item=cart_item.item,
+                quantity=cart_item.quantity,
+                price=cart_item.item.price
+            )
+
+        # Clear cart after order creation
+        cart_items.delete()
+
+        serializer = OrderSerializer(order)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    except Cart.DoesNotExist:
+        return Response({'error': 'Cart not found'}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def simulate_payment(request, order_id):
+    """Simulate payment processing"""
+    try:
+        order = Order.objects.get(id=order_id, user=request.user)
+        
+        # Simulate payment success (you can add logic to randomly succeed/fail)
+        payment_success = True  # In real app, this would be from payment gateway
+        
+        if payment_success:
+            order.payment_status = 'completed'
+            order.order_status = 'processing'
+            order.save()
+            
+            return Response({
+                'message': 'Payment successful',
+                'order_number': order.order_number,
+                'payment_status': order.payment_status
+            }, status=status.HTTP_200_OK)
+        else:
+            order.payment_status = 'failed'
+            order.save()
+            return Response({
+                'error': 'Payment failed',
+                'order_number': order.order_number
+            }, status=status.HTTP_400_BAD_REQUEST)
+            
+    except Order.DoesNotExist:
+        return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)

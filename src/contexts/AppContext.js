@@ -299,6 +299,42 @@ export const AppProvider = ({ children }) => {
 
   const clearError = () => setError(null);
 
+  const createOrder = async (shippingAddress, paymentMethod = 'online', notes = '') => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const order = await ApiService.createOrder(shippingAddress, paymentMethod, notes);
+      
+      // Clear cart after successful order creation
+      setCart([]);
+      
+      return order;
+    } catch (error) {
+      console.error('Order creation failed:', error);
+      setError(error.message || 'Failed to create order');
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const processPayment = async (orderId) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const result = await ApiService.processPayment(orderId);
+      return result;
+    } catch (error) {
+      console.error('Payment processing failed:', error);
+      setError(error.message || 'Payment processing failed');
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const value = {
     user,
     cart,
@@ -321,7 +357,9 @@ export const AppProvider = ({ children }) => {
     searchProducts,
     loadProducts,
     loadCategories,
-    clearError
+    clearError,
+    createOrder,
+    processPayment
   };
 
   return (

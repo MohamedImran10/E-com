@@ -147,6 +147,20 @@
   border-bottom: none;
 }
 
+/* Product Card Button Alignment */
+.card-body .d-flex {
+  gap: 0.5rem;
+}
+
+.btn-sm {
+  white-space: nowrap;
+}
+
+/* Ensure button stays aligned with price */
+.card-body > div:last-child {
+  margin-top: auto;
+}
+
 /* Footer styling */
 .footer {
   background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);

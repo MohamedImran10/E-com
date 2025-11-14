@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Category, Item, Cart, CartItem, Wishlist
+from .models import Category, Item, Cart, CartItem, Wishlist, UserProfile, Order, OrderItem
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=6)
@@ -77,3 +77,40 @@ class WishlistSerializer(serializers.ModelSerializer):
         model = Wishlist
         fields = ('id', 'user', 'items', 'created_at', 'updated_at')
         read_only_fields = ('id', 'user', 'created_at', 'updated_at')
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = UserProfile
+        fields = ('id', 'user', 'phone', 'address', 'city', 'state', 'pincode', 
+                 'date_of_birth', 'avatar', 'created_at', 'updated_at')
+        read_only_fields = ('id', 'user', 'created_at', 'updated_at')
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    item_name = serializers.CharField(source='item.name', read_only=True)
+    item_image = serializers.URLField(source='item.image', read_only=True)
+    total_price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+
+    class Meta:
+        model = OrderItem
+        fields = ('id', 'item', 'item_name', 'item_image', 'quantity', 'price', 'total_price')
+        read_only_fields = ('id',)
+
+class OrderSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(many=True, read_only=True)
+    user_name = serializers.CharField(source='user.get_full_name', read_only=True)
+    order_status_display = serializers.CharField(source='get_order_status_display', read_only=True)
+    payment_status_display = serializers.CharField(source='get_payment_status_display', read_only=True)
+
+    class Meta:
+        model = Order
+        fields = ('id', 'order_number', 'user', 'user_name', 'total_amount', 
+                 'order_status', 'order_status_display', 'payment_status', 'payment_status_display',
+                 'payment_method', 'shipping_address', 'notes', 'items', 'created_at', 'updated_at')
+        read_only_fields = ('id', 'order_number', 'user', 'created_at', 'updated_at')
+
+class CreateOrderSerializer(serializers.Serializer):
+    shipping_address = serializers.CharField()
+    payment_method = serializers.CharField(default='online')
+    notes = serializers.CharField(required=False, allow_blank=True)

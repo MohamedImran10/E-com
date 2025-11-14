@@ -199,6 +199,44 @@ class ApiService {
       method: 'DELETE',
     });
   }
+
+  // User Profile
+  async getProfile() {
+    return await this.request('/profile/');
+  }
+
+  async updateProfile(profileData) {
+    return await this.request('/profile/', {
+      method: 'PUT',
+      body: JSON.stringify(profileData),
+    });
+  }
+
+  // Orders
+  async getOrders() {
+    return await this.request('/orders/');
+  }
+
+  async getOrder(orderId) {
+    return await this.request(`/orders/${orderId}/`);
+  }
+
+  async createOrder(shippingAddress, paymentMethod = 'online', notes = '') {
+    return await this.request('/orders/create/', {
+      method: 'POST',
+      body: JSON.stringify({
+        shipping_address: shippingAddress,
+        payment_method: paymentMethod,
+        notes: notes,
+      }),
+    });
+  }
+
+  async processPayment(orderId) {
+    return await this.request(`/orders/${orderId}/payment/`, {
+      method: 'POST',
+    });
+  }
 }
 
 const apiService = new ApiService();

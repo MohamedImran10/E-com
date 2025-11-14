@@ -34,6 +34,15 @@ urlpatterns = [
     path('wishlist/', views.WishlistView.as_view(), name='wishlist'),
     path('wishlist/add/', views.add_to_wishlist, name='add_to_wishlist'),
     path('wishlist/remove/<int:item_id>/', views.remove_from_wishlist, name='remove_from_wishlist'),
+    
+    # User Profile URLs
+    path('profile/', views.UserProfileDetailView.as_view(), name='user_profile_detail'),
+    
+    # Order URLs
+    path('orders/', views.OrderListView.as_view(), name='order_list'),
+    path('orders/<int:pk>/', views.OrderDetailView.as_view(), name='order_detail'),
+    path('orders/create/', views.create_order, name='create_order'),
+    path('orders/<int:order_id>/payment/', views.simulate_payment, name='simulate_payment'),
 ]
 
 # Include router URLs
